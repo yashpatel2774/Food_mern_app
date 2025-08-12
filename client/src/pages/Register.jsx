@@ -33,7 +33,7 @@ const Register = ({ isOpen, onClose }) => {
       : { name: user.username, email: user.email, password: user.password };
 
     try {
-      const res = await fetch(`http://192.168.1.30:4000${endpoint}`, {
+      const res = await fetch(`http://10.209.126.144:4000${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

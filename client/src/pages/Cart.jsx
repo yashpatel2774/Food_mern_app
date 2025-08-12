@@ -1,54 +1,34 @@
-import React, { useContext, useState } from 'react';
-import { StoreContext } from '../context/storeContext';
+import React, { useContext, useMemo } from 'react';
+import { StoreContext } from "../context/StoreContext";
 import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-  const { cartItems, food_list, removeFromCart } = useContext(StoreContext);
-
+  const { cartItems = {}, foodList, removeFromCart, loading, discount, promoCode, promoError, applyPromo, setPromoCode } = useContext(StoreContext);
   const navigate = useNavigate();
 
-  const [promoCode, setPromoCode] = useState('');
-  const [discount, setDiscount] = useState(0);
-  const [promoError, setPromoError] = useState('');
-
-  const validPromoCodes = {
-    SAVE10: 10,   // 10% discount
-    SAVE20: 20,   // 20% discount
-  };
-
-  const getTotal = () => {
+  const subtotal = useMemo(() => {
+    if (!Array.isArray(foodList) || foodList.length === 0) return 0;
     let total = 0;
     for (const itemId in cartItems) {
-      const item = food_list.find(f => f._id === itemId);
-      if (item) {
-        total += item.price * cartItems[itemId];
-      }
+      const item = foodList.find(f => String(f._id) === String(itemId));
+      if (item) total += item.price * cartItems[itemId];
     }
     return total;
-  };
+  }, [cartItems, foodList]);
 
-   const subtotal = getTotal();
-   const discountAmount = (subtotal * discount) / 100;
-   const deliveryFee = subtotal > 200 ? 0 : 20;
-   const total = subtotal - discountAmount + deliveryFee;
+  const discountAmount = (subtotal * discount) / 100;
+  const deliveryFee = subtotal > 200 ? 0 : 20;
+  const total = subtotal - discountAmount + deliveryFee;
 
-
-  const applyPromo = () => {
-    const code = promoCode.trim().toUpperCase();
-    if (validPromoCodes[code]) {
-      setDiscount(validPromoCodes[code]);
-      setPromoError('');
-    } else {
-      setDiscount(0);
-      setPromoError('Invalid promo code.');
-    }
-  };
+  if (loading) {
+    return <p className="text-gray-500 p-4">Loading cart...</p>;
+  }
 
   return (
     <section className="container max-w-5xl mx-auto mt-8 px-4">
       <h2 className="text-3xl font-bold mb-6">Your Cart</h2>
 
-      {Object.keys(cartItems).length === 0 ? (
+      {Object.keys(cartItems).length === 0 || foodList.length === 0 ? (
         <p className="text-gray-500">Your cart is empty.</p>
       ) : (
         <>
@@ -63,7 +43,7 @@ const Cart = () => {
             </div>
 
             {Object.entries(cartItems).map(([itemId, quantity]) => {
-              const item = food_list.find(f => f._id === itemId);
+              const item = foodList.find(f => String(f._id) === String(itemId));
               if (!item) return null;
 
               return (
@@ -126,7 +106,7 @@ const Cart = () => {
                   className="flex-grow px-3 py-2 border border-gray-300 rounded-md text-sm"
                 />
                 <button
-                  onClick={applyPromo}
+                  onClick={() => applyPromo(promoCode)}
                   className="px-4 py-2 bg-gray-800 text-white rounded-md text-sm hover:bg-gray-300 hover:cursor-pointer hover:text-black"
                 >
                   Apply

@@ -2,13 +2,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import StoreConextProvider from './context/storeContext.jsx'
+import StoreContextProvider from "./context/StoreContextProvider";
 
 
 createRoot(document.getElementById('root')).render(
   // <StrictMode>
-    <StoreConextProvider>
+    <StoreContextProvider>
     <App />
-    </StoreConextProvider>
+    </StoreContextProvider>
   // </StrictMode>,
 )

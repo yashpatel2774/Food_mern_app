@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { assets } from "../assets/assets";
-import { StoreContext } from "../context/storeContext";
+import { StoreContext } from "../context/StoreContext";
 import { FaPlus, FaMinus } from "react-icons/fa";
 
 const FoodItem = ({ id, name, price, description, image }) => {
